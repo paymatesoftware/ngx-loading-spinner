@@ -1,4 +1,4 @@
-import {ComponentRef, DestroyRef, Directive, effect, ElementRef, inject, input, model, Renderer2, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ComponentRef, DestroyRef, Directive, effect, ElementRef, inject, input, model, Renderer2, signal, TemplateRef, untracked, ViewContainerRef} from '@angular/core';
 import {NgxLoadingSpinnerComponent} from './ngx-loading-spinner.component';
 import {NgxLoadingSpinnerConfigService} from './ngx-loading-spinner-config.service';
 import {NgxLoadingSpinnerConfig} from './config';
@@ -18,14 +18,22 @@ export class NgxLoadingSpinnerDirective {
   config = model<NgxLoadingSpinnerConfig>({} as NgxLoadingSpinnerConfig);
   template = input<TemplateRef<any> | null>(null);
 
-  private spinnerComponentRef?: ComponentRef<NgxLoadingSpinnerComponent>;
+  private spinnerComponentRef = signal<ComponentRef<NgxLoadingSpinnerComponent> | undefined>(undefined);
 
   constructor() {
+    // Create / destroy the spinner when `ngx-loading` toggles.
     effect(() => {
-      if (this.show()) {
-        this.createSpinner();
-      } else {
-        this.destroySpinner();
+      const show = this.show();
+      untracked(() => show ? this.createSpinner() : this.destroySpinner());
+    });
+
+    // Push config / template changes into an already visible spinner.
+    effect(() => {
+      const ref = this.spinnerComponentRef();
+      const config = this.config();
+      const template = this.template();
+      if (ref) {
+        untracked(() => this.applyInputs(ref, config, template));
       }
     });
 
@@ -44,22 +52,27 @@ export class NgxLoadingSpinnerDirective {
   }
 
   createSpinner() {
-    this.spinnerComponentRef = this.vcRef.createComponent(NgxLoadingSpinnerComponent);
+    if (this.spinnerComponentRef()) {
+      return;
+    }
 
+    const ref = this.vcRef.createComponent(NgxLoadingSpinnerComponent);
+    this.applyInputs(ref, this.config(), this.template());
 
-    const config = this.configService.normalizeConfigs(this.config());
-    this.spinnerComponentRef.setInput('config', config);
-    this.spinnerComponentRef.setInput('template', this.template());
-
-    this.renderer.appendChild(
-      this.vcRef.element.nativeElement,
-      this.spinnerComponentRef.injector.get(NgxLoadingSpinnerComponent).vcRef.element.nativeElement
-    );
+    this.renderer.appendChild(this.vcRef.element.nativeElement, ref.location.nativeElement);
+    this.spinnerComponentRef.set(ref);
   }
 
   destroySpinner() {
-    if (this.spinnerComponentRef) {
-      this.spinnerComponentRef.destroy();
+    const ref = this.spinnerComponentRef();
+    if (ref) {
+      ref.destroy();
+      this.spinnerComponentRef.set(undefined);
     }
+  }
+
+  private applyInputs(ref: ComponentRef<NgxLoadingSpinnerComponent>, config: NgxLoadingSpinnerConfig, template: TemplateRef<any> | null) {
+    ref.setInput('config', this.configService.normalizeConfigs(config));
+    ref.setInput('template', template);
   }
 }

@@ -1,8 +1,12 @@
 # NgxLoadingSpinner
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.3.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 22.
+
+## Compatibility
+
+v2.x requires Angular 22+ and is zoneless-ready (no `zone.js` or `NgZone` dependency). For Angular 18/19 use v1.x.
 #####
-CustomizationCustomizable loading spinner for Angular 2+ with Ivy support inspired from [ng2-loading-spinner](https://github.com/me-majidi/ng2-loading-spinner)
+CustomizationCustomizable loading spinner for Angular inspired from [ng2-loading-spinner](https://github.com/me-majidi/ng2-loading-spinner)
 
 ## Development server
 

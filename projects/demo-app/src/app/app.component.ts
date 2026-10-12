@@ -1,23 +1,24 @@
-import {AfterContentChecked, Component, TemplateRef, ViewChild} from '@angular/core';
+import {afterNextRender, ChangeDetectionStrategy, Component, signal, TemplateRef, viewChild} from '@angular/core';
 import {NgForm, FormsModule} from '@angular/forms';
 import {ANIMATION_TYPES, NgxLoadingSpinnerConfig} from '../../../ngx-loading-spinner';
 
-import {ColorPickerModule} from 'ngx-color-picker';
+import {ColorPickerDirective} from 'ngx-color-picker';
 import {NgxLoadingSpinnerDirective} from '../../../ngx-loading-spinner';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  imports: [FormsModule, ColorPickerModule, NgxLoadingSpinnerDirective]
+  imports: [FormsModule, ColorPickerDirective, NgxLoadingSpinnerDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements AfterContentChecked {
-  @ViewChild('customTemplate') customTemplate: TemplateRef<any> | null = null;
-  show = false;
+export class AppComponent {
+  customTemplate = viewChild<TemplateRef<any>>('customTemplate');
+  show = signal(false);
   borderRadius = 15;
   fontSize: any;
-  template: TemplateRef<any> | null = null;
-  initialized = false;
+  template = signal<TemplateRef<any> | null>(null);
+  initialized = signal(false);
 
   loadingConfig: NgxLoadingSpinnerConfig = new NgxLoadingSpinnerConfig({
     animationType: ANIMATION_TYPES.cubeGrid,
@@ -38,16 +39,13 @@ export class AppComponent implements AfterContentChecked {
   });
 
   constructor() {
-  }
-
-  ngAfterContentChecked() {
-    this.initialized = true;
+    afterNextRender(() => this.initialized.set(true));
   }
 
   showLoading() {
-    this.show = true;
+    this.show.set(true);
     setTimeout(() => {
-      this.show = false;
+      this.show.set(false);
     }, 1500);
   }
 
@@ -57,9 +55,9 @@ export class AppComponent implements AfterContentChecked {
 
 
     if (form.value.customTemplate) {
-      this.template = this.customTemplate;
+      this.template.set(this.customTemplate() ?? null);
     } else {
-      this.template = null;
+      this.template.set(null);
     }
   }
 }

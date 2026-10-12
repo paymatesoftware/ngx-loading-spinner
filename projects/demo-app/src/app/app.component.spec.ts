@@ -14,10 +14,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', () => {
+  it('should render title', async () => {
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('demo-app app is running!');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Ngx Loading Spinner');
   });
 });

@@ -1,4 +1,4 @@
-@if (initialized) {
+@if (initialized()) {
   <nav>
     <div class="github-link">
       <a href="https://github.com/paymatesoftware/ngx-loading-spinner">
@@ -19,7 +19,7 @@
     </div>
     <div class="py-5 container position-relative">
       <h1 class="mb-4">Ngx Loading Spinner</h1>
-      <h3>Customizable loading spinner for Angular 2+ with Ivy support</h3>
+      <h3>Customizable loading spinner for Angular 22+ (zoneless)</h3>
       <a class="d-inline-block"
          href="https://www.npmjs.com/package/@paymate-software/ngx-loading-spinner">
         <svg
@@ -197,7 +197,7 @@
           </div>
         </form>
         <button class="btn btn-dark text-white px-5"
-                [ngx-loading]="show"
+                [ngx-loading]="show()"
                 [config]="btnLoadingConfig"
                 (click)="showLoading()">
           Show Spinner
@@ -205,8 +205,8 @@
       </div>
       <div class="col-12 col-md-6 card-wrapper">
         <div class="card mt-5 mt-md-0 mx-auto ml-md-auto"
-             [ngx-loading]="show"
-             [template]="template"
+             [ngx-loading]="show()"
+             [template]="template()"
              [config]="loadingConfig">
           <p class="font-weight-bold text-center text-muted">LOGIN</p>
           <form class="d-flex flex-column">

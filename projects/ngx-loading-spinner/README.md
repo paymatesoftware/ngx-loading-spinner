@@ -1,6 +1,10 @@
 # Ngx Loading Spinner
 
-Customizable loading spinner for Angular 2+ with Ivy support inspired from [ng2-loading-spinner](https://github.com/me-majidi/ng2-loading-spinner)
+Customizable loading spinner for Angular inspired from [ng2-loading-spinner](https://github.com/me-majidi/ng2-loading-spinner)
+
+## Compatibility
+
+v2.x requires Angular 22+ and is zoneless-ready (no `zone.js` or `NgZone` dependency). For Angular 18/19 use v1.x.
 
 ## Code scaffolding
 

@@ -1,72 +1,61 @@
-import {Component, TemplateRef, ViewContainerRef, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, TemplateRef, computed, input} from '@angular/core';
 import {ANIMATION_TYPES} from './animation-types';
 import {NgxLoadingSpinnerConfig} from './config';
-import {NgClass, NgStyle, NgTemplateOutlet} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 
 @Component({
   selector: 'ngx-loading-spinner',
   template: `
     <div class="backdrop"
-         [ngStyle]="{'background-color': config()?.backdropColor, 'border-radius': config()?.backdropBorderRadius}"></div>
+         [style.background-color]="config()?.backdropColor"
+         [style.border-radius]="config()?.backdropBorderRadius"></div>
 
     <div class="wrapper"
-         [ngClass]="[config()?.spinnerPosition, config()?.spinnerSize]"
-         [ngStyle]="{'color': config()?.spinnerColor, 'font-size': config()?.spinnerFontSize}">
+         [class]="wrapperClass()"
+         [style.color]="config()?.spinnerColor"
+         [style.font-size]="config()?.spinnerFontSize">
       @if (!template()) {
-        <!-- DUAL CIRCLE SPINNER -->
-        @if (config()?.animationType === ANIMATION_TYPES.dualCircle) {
-          <div class="dual-circle"></div>
-        }
-        <!-- SCALING BARS -->
-        @if (config()?.animationType === ANIMATION_TYPES.scalingBars) {
-          <div class="scaling-bars"></div>
-        }
-        <!-- CHASING DOTS -->
-        @if (config()?.animationType === ANIMATION_TYPES.chasingDots) {
-          <div class="chasing-dots"></div>
-        }
-        <!-- BOUNCING DOTS -->
-        @if (config()?.animationType === ANIMATION_TYPES.bouncingDots) {
-          <div class="bouncing-dots">
-            <div class="bounce-1"></div>
-            <div class="bounce-2"></div>
-            <div class="bounce-3"></div>
-          </div>
-        }
-        <!-- FADING CIRCLE -->
-        @if (config()?.animationType === ANIMATION_TYPES.fadingCircle) {
-          <div class="fading-circle">
-            <div class="sk-circle1 sk-circle"></div>
-            <div class="sk-circle2 sk-circle"></div>
-            <div class="sk-circle3 sk-circle"></div>
-            <div class="sk-circle4 sk-circle"></div>
-            <div class="sk-circle5 sk-circle"></div>
-            <div class="sk-circle6 sk-circle"></div>
-            <div class="sk-circle7 sk-circle"></div>
-            <div class="sk-circle8 sk-circle"></div>
-            <div class="sk-circle9 sk-circle"></div>
-            <div class="sk-circle10 sk-circle"></div>
-            <div class="sk-circle11 sk-circle"></div>
-            <div class="sk-circle12 sk-circle"></div>
-          </div>
-        }
-        <!-- HALF CIRCLE -->
-        @if (config()?.animationType === ANIMATION_TYPES.halfCircle) {
-          <div class="half-circle"></div>
-        }
-        <!-- CUBIC GRID -->
-        @if (config()?.animationType === ANIMATION_TYPES.cubeGrid) {
-          <div class="sk-cube-grid cube-grid">
-            <div class="sk-cube sk-cube1" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube2" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube3" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube4" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube5" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube6" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube7" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube8" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-            <div class="sk-cube sk-cube9" [ngStyle]="{'background-color': config()?.spinnerColor}"></div>
-          </div>
+        @switch (config()?.animationType) {
+          <!-- DUAL CIRCLE SPINNER -->
+          @case (ANIMATION_TYPES.dualCircle) {
+            <div class="dual-circle"></div>
+          }
+          <!-- SCALING BARS -->
+          @case (ANIMATION_TYPES.scalingBars) {
+            <div class="scaling-bars"></div>
+          }
+          <!-- CHASING DOTS -->
+          @case (ANIMATION_TYPES.chasingDots) {
+            <div class="chasing-dots"></div>
+          }
+          <!-- BOUNCING DOTS -->
+          @case (ANIMATION_TYPES.bouncingDots) {
+            <div class="bouncing-dots">
+              <div class="bounce-1"></div>
+              <div class="bounce-2"></div>
+              <div class="bounce-3"></div>
+            </div>
+          }
+          <!-- FADING CIRCLE -->
+          @case (ANIMATION_TYPES.fadingCircle) {
+            <div class="fading-circle">
+              @for (n of fadingCircleItems; track n) {
+                <div class="sk-circle" [class]="'sk-circle' + n"></div>
+              }
+            </div>
+          }
+          <!-- HALF CIRCLE -->
+          @case (ANIMATION_TYPES.halfCircle) {
+            <div class="half-circle"></div>
+          }
+          <!-- CUBIC GRID -->
+          @case (ANIMATION_TYPES.cubeGrid) {
+            <div class="sk-cube-grid cube-grid">
+              @for (n of cubeGridItems; track n) {
+                <div class="sk-cube" [class]="'sk-cube' + n" [style.background-color]="config()?.spinnerColor"></div>
+              }
+            </div>
+          }
         }
       }
 
@@ -688,14 +677,16 @@ import {NgClass, NgStyle, NgTemplateOutlet} from '@angular/common';
       }
     }
   `],
-  imports: [NgStyle, NgClass, NgTemplateOutlet]
+  imports: [NgTemplateOutlet],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgxLoadingSpinnerComponent {
-  vcRef = inject(ViewContainerRef);
-
-
   config = input<NgxLoadingSpinnerConfig | null>(null);
   template = input<TemplateRef<any> | null>(null);
 
-  ANIMATION_TYPES = ANIMATION_TYPES;
+  protected readonly ANIMATION_TYPES = ANIMATION_TYPES;
+  protected readonly fadingCircleItems = Array.from({length: 12}, (_, i) => i + 1);
+  protected readonly cubeGridItems = Array.from({length: 9}, (_, i) => i + 1);
+
+  protected readonly wrapperClass = computed(() => [this.config()?.spinnerPosition, this.config()?.spinnerSize].filter(Boolean).join(' '));
 }

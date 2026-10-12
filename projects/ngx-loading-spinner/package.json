@@ -1,13 +1,12 @@
 {
   "name": "@paymate-software/ngx-loading-spinner",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Fayas Ismail (https://github.com/simfyz)",
-  "description": "Customizable loading spinner for Angular 2+ with Ivy support",
+  "description": "Customizable loading spinner for Angular 22+ (zoneless-ready)",
   "homepage": "https://github.com/paymatesoftware/ngx-loading-spinner#readme",
   "keywords": [
     "Angular",
-    "Angular 15",
-    "Angular Ivy Supported Loading Spinner",
+    "Angular 22",
     "ng",
     "load",
     "loading",
@@ -29,11 +28,11 @@
   "main": "src/public-api.ts",
   "license": "GPL-3.0",
   "peerDependencies": {
-    "@angular/common": "^18.0.0 || ^19.0.0",
-    "@angular/core": "^18.0.0 || ^19.0.0"
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.8.1"
   },
   "sideEffects": false,
   "bugs": {

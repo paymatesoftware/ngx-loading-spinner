@@ -14,7 +14,7 @@ describe('NgxLoadingSpinnerComponent', () => {
 
     fixture = TestBed.createComponent(NgxLoadingSpinnerComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
